@@ -13,6 +13,7 @@ let paid = 'No';
 let bookings;
 let eventname;
 let remainingSeats;
+let message;
 
 
 module.exports = {
@@ -91,33 +92,39 @@ var doCheckAvailability = function(conn, cb){
 
 var doinsert = function (conn, cb) {
  
-        //before you add a reservation, check if there are seats available
-       if (parseInt(seatstoReserve)  <= parseInt(remainingSeats)){
-       
-          var data = [name,eventid,paid,seatstoReserve]
-            conn.executeMany(
-           "INSERT INTO RESERVATIONS VALUES (:1, :2, :3, :4)",
-           [data], // bind the JSON string for inserting into the JSON column.
-           { autoCommit: true },
-           function(err) {
-           if (err) {
-           return cb(err, conn);
-           } else {
-           console.log("Data Inserted");
-           return cb(null, conn);
-           }
-           });
-       }else{
-       
-               console.log(`Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`);
-        
-       sdk.reply(`Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`);
+    //before you add a reservation, check if there are seats available
+   if (parseInt(seatstoReserve)  > parseInt(remainingSeats)){
 
-       done();
-               return false;
-       }
-       
-           };
+    message = `Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`;
+
+    //console.log(`From console: log Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`);       
+   
+    dorelease(conn);
+
+    //return false;
+
+   }else{
+
+    var data = [name,eventid,paid,seatstoReserve]
+    conn.executeMany(
+   "INSERT INTO RESERVATIONS VALUES (:1, :2, :3, :4)",
+   [data], // bind the JSON string for inserting into the JSON column.
+   { autoCommit: true },
+   function(err) {
+   if (err) {
+   return cb(err, conn);
+   } else {
+   //console.log("Data Inserted");
+
+   message ='Reservation done succesifully';
+
+   //return cb(null, conn);
+   }
+   });
+         
+   }
+   return cb(null, conn);
+       };
 
 var doUpdateBooking = function(conn, cb){
 
@@ -157,10 +164,9 @@ var doUpdateBooking = function(conn, cb){
         dorelease(conn);
         });
 
-        sdk.reply(`We have reserved for you ${seatstoReserve} seats at ${eventname}!`);
+        sdk.reply(message);
 
         done();    
-
 
 	}
 
