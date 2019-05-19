@@ -1,0 +1,12 @@
+#%RAML 0.8
+title: ER_VFBotAPI
+version: 1.0
+baseUri: /mobile/custom/ER_VFBotAPI
+protocols: [HTTPS]
+/components:
+  get:
+    protocols: [HTTPS]
+/components/{componentName}:
+  post:
+    body:
+      application/json:
