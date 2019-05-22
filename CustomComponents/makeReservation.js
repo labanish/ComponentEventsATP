@@ -1,4 +1,4 @@
-require ('custom-env').env('stagging') //remember to change the env. variable
+require ('custom-env').env('stagging'); //remember to change the env. variable
 var async = require('async');
 var oracledb = require('oracledb');
 var dbConfig = require('./../dbconfig.js');
