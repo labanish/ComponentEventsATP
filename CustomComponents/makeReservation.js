@@ -66,12 +66,15 @@ var dorelease = function(conn) {
         };   
 
 var doCheckAvailability = function(conn, cb){
+    console.log(`check availability at ${eventname}`);
     conn.execute( 
-        `SELECT EVENTID, BOOKINGS, (SEATS - BOOKINGS) AS REMAININGSEATS FROM EVENTS WHERE eventname LIKE 'Jazz Festival'`, 
+        `SELECT EVENTID, BOOKINGS, (SEATS - BOOKINGS) AS REMAININGSEATS FROM EVENTS WHERE eventname = :v`, 
+        [eventname],
         function(err, result)
         {
         if (err) { console.error(err); return cb(err, conn); }
-        //console.log(result.rows);
+
+        console.log(JSON.stringify(result.rows));
         
         eventid = JSON.stringify(result.rows[0][0]); 
 
@@ -80,6 +83,8 @@ var doCheckAvailability = function(conn, cb){
         bookings= JSON.stringify(result.rows[0][1]);
 
         console.log('Event ID: '+ eventid);
+
+        console.log('Event Name: '+ eventname);
 
         console.log('Bookings: '+ bookings);
 
@@ -95,9 +100,9 @@ var doinsert = function (conn, cb) {
     //before you add a reservation, check if there are seats available
    if (parseInt(seatstoReserve)  > parseInt(remainingSeats)){
 
-    message = `Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`;
+    message = `Sorry, you can't book ${seatstoReserve} seats at ${eventname}. Unfortunately we do not have enough seats available... the available seats remaining are ${remainingSeats}`;
 
-    //console.log(`From console: log Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`);       
+    console.log(`From console: log Sorry, you can't book ${seatstoReserve} seats at ${eventname}. No enough seats available... the available seats are ${remainingSeats}`);       
    
     dorelease(conn);
 
@@ -116,7 +121,7 @@ var doinsert = function (conn, cb) {
    } else {
    //console.log("Data Inserted");
 
-   message ='Reservation done succesifully';
+   message ="Reservation done succesifully for: "+ eventname +": "+ seatstoReserve+" seat(s)";
 
    //return cb(null, conn);
    }
@@ -162,11 +167,14 @@ var doUpdateBooking = function(conn, cb){
         if (err) { console.error("In waterfall error cb: ==>", err, "<=="); }
         if (conn)
         dorelease(conn);
-        });
-
+        
+        //reply to the bot!
         sdk.reply(message);
-
-        done();    
+        sdk.transition("endsubmitBooking");
+        sdk.keepTurn(true);
+        done(); 
+        });
+ 
 
 	}
 

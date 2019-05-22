@@ -1,4 +1,4 @@
-require ('custom-env').env('stagging')
+require ('custom-env').env('stagging') //either stagging or production
 const apiURL = '/mobile/atp/components';
 
 // Reference component shell
@@ -10,7 +10,7 @@ const service = express()
 
 const request = require('request')
 
-service.set('port', (process.env.PORT || 5004))
+service.set('port', (process.env.PORT || 5002))
 
 // Process application/x-www-form-urlencoded
 service.use(bodyParser.urlencoded({extended: false}))
