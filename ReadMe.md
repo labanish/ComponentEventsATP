@@ -6,7 +6,7 @@ Clone the ComponentEventsATP
 The skill is LN_Events(1.0) -> you can import it in ODA.
 Expose ODA on your favourite channel ie. Alexa, Facebook messanger
 
-#Custom Component
+# Custom Component
 Run the external Custom component  on OCI  or any other node container
 
 Make sure the .env file points to the right location of your connection wallet.
